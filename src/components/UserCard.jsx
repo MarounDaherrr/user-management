@@ -16,55 +16,44 @@ const usersData = [
 const UserCard = () => {
   const [search, setSearch] = useState("");
 
-  const filteredUsers = usersData.filter((user) =>
+  const filteredUsers = usersData.filter(user =>
     user.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="p-6">
-      {/* Search Input */}
-      <div className="mb-5">
+    <>
+      <div className="px-6 py-4">
         <input
           type="text"
           placeholder="Search users..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-xs p-2 border border-gray-300 rounded"
+          onChange={e => setSearch(e.target.value)}
+          className="w-64 p-2 border border-gray-300 rounded"
         />
       </div>
 
-      {/* User Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredUsers.map((user, index) => (
-          <div
-            key={index}
-            className="bg-white shadow p-4 rounded-lg flex flex-col justify-between h-full"
-          >
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-8 py-4">
+        {filteredUsers.map((user, i) => (
+          <div key={i} className="bg-white shadow-md p-4 rounded-lg flex flex-col justify-between h-full">
             <div>
               <div className="flex justify-center mb-4">
-                <div className="bg-primary text-white font-bold text-lg rounded-full w-12 h-12 flex items-center justify-center">
-                  {user.initials || "?"}
+                <div className="bg-primary text-white text-lg font-semibold rounded-full w-12 h-12 flex items-center justify-center">
+                  {user.initials}
                 </div>
               </div>
-              <h2 className="font-semibold mb-1">{user.name}</h2>
+              <h2 className="font-bold mb-1">{user.name}</h2>
               <p className="text-sm text-gray-600">Email: {user.email}</p>
-              <p className="text-sm text-gray-600">
-                Status:{" "}
-                <span className={user.status === "active" ? "text-green-600" : "text-gray-500"}>
-                  {user.status}
-                </span>
-              </p>
+              <p className="text-sm text-gray-600 capitalize">Status: {user.status}</p>
               <p className="text-sm text-gray-600">Date of Birth: {user.dob}</p>
             </div>
-
             <div className="mt-4 flex justify-end gap-2">
-              <button className="bg-primary text-white px-4 py-1 rounded text-sm">Edit</button>
-              <button className="bg-red-500 text-white px-4 py-1 rounded text-sm">Delete</button>
+              <button className="bg-primary text-white px-4 py-1 rounded">Edit</button>
+              <button className="bg-red-500 text-white px-4 py-1 rounded">Delete</button>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 
