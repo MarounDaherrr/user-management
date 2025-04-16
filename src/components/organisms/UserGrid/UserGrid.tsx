@@ -42,7 +42,7 @@ const UserGrid = () => {
           setUsers(data.result.data.users);
         }
       } catch (err) {
-        console.error(`Error fetching users: ${err.message}`, err);
+        console.error("Failed to fetch users", err);
       } finally {
         setLoading(false);
       }
