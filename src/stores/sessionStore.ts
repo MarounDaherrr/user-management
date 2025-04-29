@@ -14,10 +14,8 @@ export const useSessionStore = create<SessionState>()(
       accessToken: null,
       expiresIn: null,
       setSession: (token, expiry) => set({ accessToken: token, expiresIn: expiry }),
-      logout: () => set({ accessToken: null, expiresIn: null }),
+      logout: () => set({ accessToken: null, expiresIn: null }), 
     }),
-    {
-      name: "user-session", 
-    }
+    { name: "user-session" } 
   )
 );

@@ -1,37 +1,50 @@
-@tailwind base;
-@tailwind components;
+@tailwind base; 
+@tailwind components; 
 @tailwind utilities;
 
-
-  
-  @media (min-width: 640px) {
-    .user-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (min-width: 768px) {
-    .user-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-  @media (min-width: 1024px) {
-    .user-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-  @media (min-width: 1280px) {
-    .user-grid {
-      grid-template-columns: repeat(5, 1fr);
-    }
-  }
-  
-
-  .user-card {
-    @apply flex flex-col p-4 rounded-lg shadow-md bg-white dark:bg-gray-700 h-full min-h-[250px]; 
-    box-sizing: border-box;
-    width: 100%;
-  }
-  
-  .user-grid {
+.user-grid {
   @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 px-6 pb-10 w-full;
+}
+
+.user-card {
+  @apply flex flex-col p-4 rounded-lg shadow-md bg-white dark:bg-gray-700 h-full min-h-[250px];
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .user-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .user-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .user-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .user-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 639px) {
+  .user-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .user-card {
+    min-height: auto;
+    padding: 16px;
+  }
 }

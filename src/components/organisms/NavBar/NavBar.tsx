@@ -14,16 +14,23 @@ const NavBar = () => {
     navigate("/login");
   };
 
+  const handleCreateUser = () => {
+    navigate("/dashboard/new"); 
+  };
+
   return (
     <nav className="bg-primary text-white px-6 py-4 flex justify-between items-center">
       <h1 className="text-xl font-medium">User Management</h1>
       <div className="flex items-center gap-4">
-        <button className="bg-white text-primary px-6 py-3 rounded text-base">
+        <button 
+          onClick={handleCreateUser} 
+          className="bg-white text-primary px-5 py-2 rounded text-base"
+        >
           Create User
         </button>
         <button
           onClick={handleLogout}
-          className="bg-red-500 text-white px-6 py-3 rounded text-base"
+          className="bg-red-500 text-white px-5 py-2 rounded text-base"
         >
           Logout
         </button>

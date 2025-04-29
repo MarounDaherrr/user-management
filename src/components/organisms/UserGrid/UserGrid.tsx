@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSessionStore } from "../../../stores/sessionStore";
+import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
+import { useQuery, useQueryClient } from "react-query";
 import SearchInput from "../../atoms/SearchInput";
 import { UserCard } from "../../molecules/UserCard/UserCard";
+import { toast } from "react-toastify";
 
 interface User {
   id: string;
@@ -13,43 +16,52 @@ interface User {
   dateOfBirth: string;
 }
 
-const UserGrid = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+const fetchUsers = async (debouncedSearch: string, accessToken: string) => {
+  const response = await fetch(`/api/users?search=${debouncedSearch}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
+  if (!response.ok) {
+    throw new Error("Failed to fetch users");
+  }
+
+  const data = await response.json();
+  return data.result.data.users;
+};
+
+const UserGrid = () => {
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 400);
   const accessToken = useSessionStore((s) => s.accessToken);
   const logout = useSessionStore((s) => s.logout);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/users?search=${search}`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
+  if (!accessToken) {
+    navigate("/login");
+    return null;
+  }
 
-        const data = await res.json();
+  const { data: users, isLoading, error } = useQuery(
+    ["users", debouncedSearch, accessToken],
+    () => fetchUsers(debouncedSearch, accessToken),
+    {
+      onError: () => {
+        logout();
+        navigate("/login");
+      },
+    }
+  );
 
-        if (res.status === 401) {
-          logout();
-          navigate("/login");
-          return;
-        }
-
-        if (res.ok) {
-          setUsers(data.result.data.users);
-        }
-      } catch (err) {
-        console.error("Failed to fetch users", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, [search]);
+  const handleError = (error: unknown) => {
+    if (error instanceof Error) {
+      return error.message;
+    } else {
+      return "An unexpected error occurred.";
+    }
+  };
 
   return (
     <>
@@ -57,19 +69,28 @@ const UserGrid = () => {
         <SearchInput value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="text-center text-lg">Loading users...</div>
+      ) : error ? (
+        <div className="text-center text-lg text-red-500">
+          Error: {handleError(error)}
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-7 pb-11 w-full">
-          {users.length > 0 ? (
-            users.map((user) => (
+        <div className="user-grid">
+          {users?.length > 0 ? (
+            users.map((user: User) => (
               <UserCard
                 key={user.id}
+                id={user.id}
                 initials={(user.firstName[0] + (user.lastName?.[0] || "")).toUpperCase()}
                 name={`${user.firstName} ${user.lastName || ""}`}
                 email={user.email}
                 status={user.status.toLowerCase() as "active" | "locked"}
                 dob={user.dateOfBirth}
+                onDelete={() => {
+                  queryClient.invalidateQueries("users");
+                  toast.success("User deleted successfully!");
+                }}
               />
             ))
           ) : (
